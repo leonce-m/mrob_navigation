@@ -1,0 +1,35 @@
+local_costmap:
+  global_frame: odom
+  robot_base_frame: base_footprint
+
+  rolling_window: true
+  width: 3
+  height: 3
+  resolution: 0.02
+  
+  # Plugins
+  plugins:
+    - {name: obstacle_layer, type: "costmap_2d::ObstacleLayer"}
+    - {name: inflation_layer, type: "costmap_2d::InflationLayer"}
+
+  obstacle_layer:
+    obstacle_range: 3.0
+    raytrace_range: 3.5
+    track_unknown_space: true
+    footprint_clearing_enabled: true
+    combination_method: 1
+
+    observation_sources: scan
+    scan:
+      topic: scan
+      sensor_frame: base_scan
+      observation_persistence: 0.0
+      expected_update_rate: 0.0
+      data_type: LaserScan
+      clearing: true
+      marking: true
+      inf_is_valid: true
+
+  inflation_layer:
+    inflation_radius: 1.0
+    cost_scaling_factor: 10.0

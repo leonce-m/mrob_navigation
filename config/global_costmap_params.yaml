@@ -1,0 +1,43 @@
+global_costmap:
+  global_frame: map
+  robot_base_frame: base_footprint
+
+  resolution: 0.1
+
+  # Plugins
+  plugins:
+    - {name: static_layer, type: "costmap_2d::StaticLayer"}
+    - {name: obstacle_layer, type: "costmap_2d::ObstacleLayer"}
+    - {name: inflation_layer, type: "costmap_2d::InflationLayer"}
+
+  static_layer:
+    map_topic: map
+    unknown_cost_value: -1
+    lethal_cost_threshold: 100
+    first_map_only: false
+    subscribe_to_updates: false
+    track_unknown_space: true
+    use_maximum: false
+    trinary_costmap: true
+
+  obstacle_layer:
+    obstacle_range: 3.0
+    raytrace_range: 3.5
+    track_unknown_space: true
+    footprint_clearing_enabled: true
+    combination_method: 1
+
+    observation_sources: scan
+    scan:
+      topic: scan
+      sensor_frame: base_scan
+      observation_persistence: 0.0
+      expected_update_rate: 0.0
+      data_type: LaserScan
+      clearing: true
+      marking: true
+      inf_is_valid: true
+
+  inflation_layer:
+    inflation_radius: 1.0
+    cost_scaling_factor: 10.0
