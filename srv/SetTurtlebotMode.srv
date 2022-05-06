@@ -1,0 +1,10 @@
+#Enum mode
+uint8 IDLE = 0
+uint8 TELEOP = 1
+uint8 GOTO = 2
+uint8 EXPLORE = 3
+
+uint8 mode
+---
+bool success # indicate successful mode selection
+string message # informational, e.g. for error messages
