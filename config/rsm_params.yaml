@@ -1,0 +1,12 @@
+update_frequency: 20
+robot_frame: /base_footprint
+mapping_plugin: rsm::MappingDummyState
+calculate_goal_plugin: rsm::CalculateGoalState
+navigation_plugin: rsm::NavigationState
+autonomy_cmd_vel_topic: /autonomy/cmd_vel
+teleoperation_cmd_vel_topic: /teleoperation/cmd_vel
+cmd_vel_topic: /cmd_vel
+joystick_used: false
+joystick_topic: joy
+teleoperation_idle_timer: 0.5
+waypoint_routines: []

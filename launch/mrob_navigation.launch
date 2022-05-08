@@ -3,7 +3,7 @@
   <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]" />
   <arg name="configuration_basename" default="turtlebot3_lds_2d.lua" />
   <arg name="sensor_range" default="1.0" />
-  <arg name="cmd_vel_topic" default="/cmd_vel" />
+  <arg name="cmd_vel_topic" default="/autonomy/cmd_vel" />
   <arg name="odom_topic" default="odom" />
   <arg name="open_rviz" default="true" />
   <arg name="simulation" default="true "/>
@@ -16,13 +16,13 @@
     </include>
   </group>
 
-  <!-- TurtleBot3 and Gmapping -->
+  <!-- gmapping -->
   <include file="$(find turtlebot3_slam)/launch/turtlebot3_gmapping.launch">
     <arg name="model" value="$(arg model)" />
   </include>
 
   <!-- move_base -->
-  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base">
     <param name="base_global_planner" value="global_planner/GlobalPlanner" />
     <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
     <rosparam file="$(find mrob_navigation)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
@@ -38,10 +38,35 @@
   </node>
   
   <!-- explore_lite -->
-  <include file="$(find mrob_navigation)/launch/mrob_explore.launch" />
+  <node pkg="costmap_2d" type="costmap_2d_node" name="explore_costmap">
+    <rosparam file="$(find mrob_navigation)/config/costmap_common_params.yaml" command="load" ns="costmap" />
+    <rosparam file="$(find mrob_navigation)/config/explore_costmap_params.yaml" command="load" />
+  </node>
+  <node pkg="explore_lite" type="explore" respawn="false" name="explore">
+    <rosparam file="$(find mrob_navigation)/config/explore_lite_params.yaml" command="load" />
+    <remap from="/move_base/goal" to="/frontier_move_base/goal"/>
+    <remap from="/move_base/feedback" to="/frontier_move_base/feedback"/>
+    <remap from="/move_base/status" to="/frontier_move_base/status"/>
+    <remap from="/move_base/result" to="/frontier_move_base/result"/>
+    <remap from="/move_base/cancel" to="/frontier_move_base/cancel"/>
+  </node>
+
+  <!-- rsm -->
+  <node pkg="rsm_additions" type="bootUpNode" name="bootUpNode"/>
+  <node pkg="rsm_additions" type="additionsServiceProviderNode" name="additionsServiceProviderNode">
+    <rosparam file="$(find mrob_navigation)/config/rsm_params.yaml"/> 
+    <param name="autonomy_cmd_vel_topic" value="$(arg cmd_vel_topic)"/>
+  </node>
+  <include file="$(find rsm_core)/launch/rsm.launch">
+    <rosparam file="$(find mrob_navigation)/config/rsm_params.yaml"/>
+    <param name="autonomy_cmd_vel_topic" value="$(arg cmd_vel_topic)"/>
+  </include>
+  <include file="$(find rsm_rviz_plugins)/launch/rsm_rviz_plugins.launch"/>
 
   <!-- rviz -->
   <group if="$(arg open_rviz)"> 
-    <node pkg="rviz" type="rviz" name="rviz" required="true" args="-d $(find mrob_navigation)/rviz/mrob_navigation.rviz"/>
+    <node pkg="rviz" type="rviz" name="rviz" required="true" args="-d $(find mrob_navigation)/rviz/mrob_navigation.rviz">
+      <remap from="/move_base_simple/goal" to="/rsm/simpleGoal" />
+    </node>
   </group>
 </launch>

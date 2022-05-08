@@ -71,7 +71,13 @@
   <exec_depend>tf2</exec_depend>
   <exec_depend>tf2_geometry_msgs</exec_depend>
   <exec_depend>turtlebot3_msgs</exec_depend>
-
+  
+  <exec_depend>turtlebot3</exec_depend>
+  <exec_depend>gmapping</exec_depend>
+  <exec_depend>move-base</exec_depend>
+  <exec_depend>global-planner</exec_depend>
+  <exec_depend>dwa-local-planner</exec_depend>
+  <exec_depend>explore-lite</exec_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
